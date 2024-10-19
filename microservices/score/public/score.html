@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Score</title>
+    <link rel="stylesheet" href="score.css">
+</head>
+<body>
+    <h1 id="username">Please log in to see your score or check other score by typing their username in the url.</h1>
+    <div id="scoreInfo">
+        <p><strong>Number of Word(s) found:</strong> <span id="wordCount">0</span></p>
+        <p><strong>Average try:</strong> <span id="averageTry">0</span></p>
+    </div>
+    <form id="mainPageForm">
+       <input type="submit" value="Main Page" />
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to retrieve URL parameters
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            };
+
+            // Get the value of the username parameter
+            var username = getUrlParameter('username');
+            if (username) {
+              // Update the HTML with the username
+              $('#username').text("Score of "+username);
+            }
+
+            // Update form action with the username
+            $('#mainPageForm').attr('action', 'http://localhost:8080?username=' + username);
+
+            // Make a call to /getscore endpoint
+            $.ajax({
+                url: '/getscore',
+                type: 'GET',
+                data: {
+                    username: username
+                },
+                success: function(response) {
+                    // Update the HTML with the retrieved score information
+                    $('#wordCount').text(response.wordsFound);
+                    $('#averageTry').text(response.averageTry);
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error(error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

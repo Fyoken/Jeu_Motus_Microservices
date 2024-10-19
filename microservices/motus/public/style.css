@@ -1,0 +1,86 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+#log {
+    text-align: center;
+    margin-top: 10px;
+    color: #333;
+}
+
+form {
+    text-align: center;
+    margin-top: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+}
+
+button[type="submit"],
+input[type="submit"] {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover,
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+#wordLength {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+#remainingTries {
+    text-align: center;
+    margin-top: 10px;
+    color: #333;
+}
+
+#result {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+#guessHistory {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+#so {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+#loginLogoutButton {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.incorrect-length {
+    color: red;
+}

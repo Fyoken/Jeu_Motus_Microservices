@@ -1,0 +1,122 @@
+version: '3'
+      
+networks:
+  monitor-net:
+    
+services:
+  redisScore:
+    image: redis:6.2-alpine
+    ports:
+      - "6381:6379"
+    volumes:
+      - ./score/data/redis:/data
+    restart: always
+    
+  redisAuth:
+   image: redis:6.2-alpine
+   ports:
+     - "6380:6379"
+   volumes:
+     - ./auth/data/redis:/data
+   restart: always
+      
+  app1:
+    build: ./motus
+    ports:
+      - "4000:3001"
+    depends_on:
+      - redisScore
+    environment:
+      - PORT=3001
+
+  app2:
+    build: ./motus
+    ports:
+      - "5000:3001"
+    depends_on:
+      - redisScore
+    environment:
+      - PORT=3001
+
+  haproxy:
+    build: ./haproxy
+    ports:
+      - "8080:3001"
+    depends_on:
+      - app1
+      - app2
+    environment:
+      - PORT=3001
+      
+  score:
+    build: ./score
+    ports:
+      - "7000:3001"
+    depends_on:
+      - redisScore
+    environment:
+      - REDIS_URL=redis://redisScore:6379
+      - PORT=3001
+      
+  auth:
+    build: ./auth
+    ports:
+      - "3012:3001"
+    depends_on:
+      - redisAuth
+      
+    environment:
+      - REDIS_URL=redis://redisAuth:6379
+      - PORT=3001
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    networks:
+      - monitor-net
+
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - 3100:3100
+    restart: unless-stopped
+    networks:
+      - monitor-net
+      
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    expose:
+      - 9090
+    ports:
+      - 9090:9090
+    networks:
+      - monitor-net
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    expose:
+      - 9100
+    ports:
+      - 9100:9100
+    networks:
+      - monitor-net

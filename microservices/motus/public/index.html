@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motus Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Motus Game</h1>
+    <center><h3 id="log"></h3></center>
+    <form id="guessForm">
+        <label for="guessInput">Enter your guess:</label>
+        <input type="text" id="guessInput" name="guessInput" required>
+        <button type="submit">Submit</button>
+    </form>
+    <br>
+    <br>
+    <br>
+    <center>
+        <div id="wordLength"></div>
+        <div id="remainingTries">Remaining Tries: 6</div>
+        <div id="wordLength"></div>
+        <div id="result"></div>
+        <div id="guessHistory"></div>
+        <div id="so"></div>
+        <!-- Replace login button with logout button if user is logged in -->
+        <div id="loginLogoutButton">
+            <!-- This div will be updated based on whether the user is logged in -->
+        </div>
+        <form id="scoreForm" action="http://localhost:7000/score">
+            <input type="hidden" id="usernameInput" name="username" value="">
+            <input type="submit" value="Score" />
+        </form>
+    </center>
+    <audio id="myAudio" src="motus.mp3"></audio>
+    <audio id="trouve" src="motusmot.mp3"></audio>
+    <audio id="boule" src="boulenoire.mp3"></audio>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="client.js"></script>
+    <script>
+        // Fetch the username and set the value of usernameInput
+        $(document).ready(function() {
+            $.get("/username", function(data) {
+                $("#usernameInput").val(data);
+                // Update login/logout button based on whether the user is logged in
+                if (data) {
+                    // If user is logged in, show logout button
+                    $("#loginLogoutButton").html('<form id="logoutForm" action="/logout" method="GET"><button type="submit">Logout</button></form>');
+                } else {
+                     $("#log").text("Please log in to save your score. You can still play without logging in.");
+                    // If user is not logged in, show login button
+                    $("#loginLogoutButton").html('<form action="http://localhost:3012/login"><button type="submit">Login</button></form>');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
